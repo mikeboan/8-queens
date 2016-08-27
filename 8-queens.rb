@@ -18,21 +18,27 @@ class EightQueens
 
   def solve(board = EightQueens.empty_board, row = 0, col = 0)
     # debugger
-    return false if has_error?(board)
+    # return false if has_error?(board)
     return true if row > 7 ## solved!
 
+    system('clear')
+    render(board)
     # sleep(3.0)
 
     ## iterate over possibilities
+    new_col = col + 1
     8.times do |new_row|
       # debugger
-      place_queen(board, new_row, col)
-      # debugger
-      if solve(board, new_row, col + 1)
-        render(board)
-        return true
-      end 
-      remove_queen(board, new_row, col)
+      if safe_pos?(board, new_row, new_col)
+        place_queen(board, new_row, new_col)
+        # debugger
+        if solve(board, new_row, new_col)
+          render(board)
+          return true
+        end
+
+        remove_queen(board, new_row, col)
+      end
     end
 
     ## return false if
@@ -47,9 +53,48 @@ class EightQueens
     board[row][col] = nil
   end
 
+  def safe_pos?(board, row, col)
+    safe_row?(board, row) &&
+      safe_col?(board, col) &&
+      safe_diags?(board, row, col)
+  end
+
+  def safe_row?(board, row)
+    8.times do |col|
+      return true unless board[row][col].nil?
+    end
+    false
+  end
+
+  def safe_col?(board, col)
+    8.times do |row|
+      return true unless board[row][col].nil?
+    end
+    false
+  end
+
+  def safe_diags?(board, row, col)
+    check_row = row
+    check_col = col
+
+    deltas = [[-1, 1], [1, 1] [-1, 1], [-1, -1]]
+    deltas.each do |delta|
+      delta_row = delta.first
+      delta_col = delta.last
+      while check_row.between?(0, 7) && check_col.between?(0, 7)
+        return false unless board[check_row][check_col].nil?
+        check_row += delta_row
+        check_col += delta_col
+      end
+    end
+
+    true
+  end
+
   def has_error?(board)
-    render(board)
-    row_error?(board) || col_error?(board) || diag_error?(board)
+    row_error?(board) ||
+      col_error?(board) ||
+      diag_error?(board)
   end
 
   def row_error?(board)
