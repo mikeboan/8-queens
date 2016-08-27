@@ -21,7 +21,9 @@ class EightQueens
     return false if has_error?(board)
     return true if row > 7 ## solved!
 
-    # sleep(3.0)
+    system('clear')
+    render(board)
+    sleep(0.1)
 
     ## iterate over possibilities
     8.times do |new_row|
@@ -31,7 +33,7 @@ class EightQueens
       if solve(board, new_row, col + 1)
         render(board)
         return true
-      end 
+      end
       remove_queen(board, new_row, col)
     end
 
